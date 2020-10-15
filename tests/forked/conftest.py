@@ -33,12 +33,11 @@ def WBTC(Contract):
 
 
 @pytest.fixture(scope="module")
-def registry_renbtc(accounts, registry, calculator, pool_renbtc, lp_renbtc):
+def registry_renbtc(accounts, registry, pool_renbtc, lp_renbtc):
     registry.add_pool_without_underlying(
         pool_renbtc,
         2,
         lp_renbtc,
-        calculator,
         right_pad("0xbd6d894d"),
         pack_values([8, 8]),
         pack_values([True] + [False] * 7),
@@ -48,3 +47,8 @@ def registry_renbtc(accounts, registry, calculator, pool_renbtc, lp_renbtc):
     )
 
     yield registry
+
+
+@pytest.fixture(scope="module")
+def renbtc_swap(RegistrySwaps, accounts, registry_renbtc, calculator):
+    yield RegistrySwaps.deploy(registry_renbtc, calculator, {'from': accounts[0]})
