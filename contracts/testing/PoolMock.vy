@@ -23,6 +23,7 @@ future_A: public(uint256)
 future_A_time: public(uint256)
 
 fee: public(uint256)
+admin_fee: public(uint256)
 future_fee: public(uint256)
 future_admin_fee: public(uint256)
 future_owner: public(address)

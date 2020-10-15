@@ -7,7 +7,7 @@ def test_set_liquidity_gauges(accounts, registry_y, pool_y, gauge_y, gauge_contr
     gauges = [gauge_y] + [ZERO_ADDRESS] * 9
     gauge_types = [gauge_controller.gauge_types(gauge_y)] + [0] * 9
     registry_y.set_liquidity_gauges(pool_y, gauges, {'from': accounts[0]})
-    assert registry_y.get_pool_gauges(pool_y) == (gauges, gauge_types)
+    assert registry_y.get_gauges(pool_y) == (gauges, gauge_types)
 
 
 def test_incorrect_gauge(accounts, registry_y, pool_y, gauge_susd, gauge_controller):
@@ -33,7 +33,7 @@ def test_set_multiple(LiquidityGaugeMock, accounts, registry_y, pool_y, lp_y, ga
         gauge_types.append(i)
 
     registry_y.set_liquidity_gauges(pool_y, gauges, {'from': accounts[0]})
-    assert registry_y.get_pool_gauges(pool_y) == (gauges, gauge_types)
+    assert registry_y.get_gauges(pool_y) == (gauges, gauge_types)
 
 
 def test_unset_multiple(LiquidityGaugeMock, accounts, registry_y, pool_y, lp_y, gauge_controller):
@@ -52,4 +52,4 @@ def test_unset_multiple(LiquidityGaugeMock, accounts, registry_y, pool_y, lp_y, 
     gauge_types = gauge_types[2:5] + [0] * 7
     registry_y.set_liquidity_gauges(pool_y, gauges, {'from': accounts[0]})
 
-    assert registry_y.get_pool_gauges(pool_y) == (gauges, gauge_types)
+    assert registry_y.get_gauges(pool_y) == (gauges, gauge_types)

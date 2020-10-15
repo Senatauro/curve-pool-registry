@@ -111,7 +111,6 @@ def test_no_initial_A(accounts, yDAI, registry, pool_y, lp_y):
         pool_y,
         4,
         lp_y,
-        ZERO_ADDRESS,
         right_pad(yDAI.getPricePerFullShare.signature),
         pack_values([18, 6, 6, 18]),
         pack_values([18, 6, 6, 18]),

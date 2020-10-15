@@ -6,39 +6,23 @@ from scripts.utils import pack_values
 ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 
-def test_remove_first(accounts, registry_all, pool_compound, pool_y, pool_susd):
-    registry_all.remove_pool(pool_compound, {'from': accounts[0]})
+@pytest.mark.parametrize("idx", range(4))
+def test_remove(accounts, registry_all, pool_compound, pool_y, pool_susd, pool_eth, idx):
+    pool_list = [pool_compound, pool_y, pool_susd, pool_eth]
+    registry_all.remove_pool(pool_list[idx], {'from': accounts[0]})
+    pool_list[idx] = pool_list[-1]
+    pool_list[-1] = ZERO_ADDRESS
 
-    assert registry_all.pool_count() == 2
-    assert registry_all.pool_list(0) == pool_susd
-    assert registry_all.pool_list(1) == pool_y
-    assert registry_all.pool_list(2) == ZERO_ADDRESS
-
-
-def test_remove_middle(accounts, registry_all, pool_compound, pool_y, pool_susd):
-    registry_all.remove_pool(pool_y, {'from': accounts[0]})
-
-    assert registry_all.pool_count() == 2
-    assert registry_all.pool_list(0) == pool_compound
-    assert registry_all.pool_list(1) == pool_susd
-    assert registry_all.pool_list(2) == ZERO_ADDRESS
+    assert registry_all.pool_count() == 3
+    assert [registry_all.pool_list(i) for i in range(4)] == pool_list
 
 
-def test_remove_final(accounts, registry_all, pool_compound, pool_y, pool_susd):
-    registry_all.remove_pool(pool_susd, {'from': accounts[0]})
-
-    assert registry_all.pool_count() == 2
-    assert registry_all.pool_list(0) == pool_compound
-    assert registry_all.pool_list(1) == pool_y
-    assert registry_all.pool_list(2) == ZERO_ADDRESS
-
-
-def test_remove_all(accounts, registry_all, pool_compound, pool_y, pool_susd):
-    for pool in (pool_compound, pool_y, pool_susd):
+def test_remove_all(accounts, registry_all, pool_compound, pool_y, pool_susd, pool_eth):
+    for pool in (pool_compound, pool_y, pool_susd, pool_eth):
         registry_all.remove_pool(pool, {'from': accounts[0]})
 
     assert registry_all.pool_count() == 0
-    for i in range(3):
+    for i in range(5):
         assert registry_all.pool_list(i) == ZERO_ADDRESS
 
 
@@ -83,7 +67,6 @@ def test_get_pool_info(accounts, registry_all, pool_y, pool_susd, lp_susd):
         pool_susd,
         4,
         lp_susd,
-        ZERO_ADDRESS,
         "0x00",
         pack_values([18, 6, 6, 18]),
         pack_values([18, 6, 6, 18]),

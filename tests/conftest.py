@@ -20,13 +20,12 @@ def registry(Registry, accounts, gauge_controller):
 
 
 @pytest.fixture(scope="module")
-def registry_compound(accounts, Registry, gauge_controller, pool_compound, calculator, lp_compound, cDAI, USDT):
+def registry_compound(accounts, Registry, gauge_controller, pool_compound, lp_compound, cDAI, USDT):
     registry = Registry.deploy(gauge_controller, {'from': accounts[0]})
     registry.add_pool(
         pool_compound,
         2,
         lp_compound,
-        calculator,
         right_pad(cDAI.exchangeRateStored.signature),
         pack_values([8, 8]),
         pack_values([18, 6]),
@@ -39,13 +38,12 @@ def registry_compound(accounts, Registry, gauge_controller, pool_compound, calcu
 
 
 @pytest.fixture(scope="module")
-def registry_y(Registry, accounts, gauge_controller, pool_y, calculator, lp_y, yDAI, USDT):
+def registry_y(Registry, accounts, gauge_controller, pool_y, lp_y, yDAI, USDT):
     registry = Registry.deploy(gauge_controller, {'from': accounts[0]})
     registry.add_pool(
         pool_y,
         4,
         lp_y,
-        calculator,
         right_pad(yDAI.getPricePerFullShare.signature),
         pack_values([18, 6, 6, 18]),
         pack_values([18, 6, 6, 18]),
@@ -58,13 +56,12 @@ def registry_y(Registry, accounts, gauge_controller, pool_y, calculator, lp_y, y
 
 
 @pytest.fixture(scope="module")
-def registry_susd(Registry, accounts, gauge_controller, pool_susd, calculator, lp_susd, USDT):
+def registry_susd(Registry, accounts, gauge_controller, pool_susd, lp_susd, USDT):
     registry = Registry.deploy(gauge_controller, {'from': accounts[0]})
     registry.add_pool(
         pool_susd,
         4,
         lp_susd,
-        calculator,
         "0x00",
         pack_values([18, 6, 6, 18]),
         pack_values([18, 6, 6, 18]),
@@ -83,7 +80,6 @@ def registry_eth(Registry, accounts, gauge_controller, pool_eth, lp_y, USDT, yDA
         pool_eth,
         3,
         lp_y,
-        ZERO_ADDRESS,
         right_pad(yDAI.getPricePerFullShare.signature),
         "0x00",
         "0x00",
@@ -98,9 +94,9 @@ def registry_eth(Registry, accounts, gauge_controller, pool_eth, lp_y, USDT, yDA
 @pytest.fixture(scope="module")
 def registry_all(
     Registry, accounts, gauge_controller,
-    pool_compound, pool_y, pool_susd,
+    pool_compound, pool_y, pool_susd, pool_eth,
     cDAI, yDAI, USDT,
-    calculator, lp_compound, lp_y, lp_susd
+    lp_compound, lp_y, lp_susd
 ):
     registry = Registry.deploy(gauge_controller, {'from': accounts[0]})
 
@@ -108,7 +104,6 @@ def registry_all(
         pool_compound,
         2,
         lp_compound,
-        calculator,
         right_pad(cDAI.exchangeRateStored.signature),
         pack_values([8, 8]),
         pack_values([18, 6]),
@@ -120,7 +115,6 @@ def registry_all(
         pool_y,
         4,
         lp_y,
-        calculator,
         right_pad(yDAI.getPricePerFullShare.signature),
         pack_values([18, 6, 6, 18]),
         pack_values([18, 6, 6, 18]),
@@ -132,7 +126,6 @@ def registry_all(
         pool_susd,
         4,
         lp_susd,
-        calculator,
         "0x00",
         pack_values([18, 6, 6, 18]),
         pack_values([18, 6, 6, 18]),
@@ -140,8 +133,24 @@ def registry_all(
         True,
         {'from': accounts[0]}
     )
+    registry.add_pool(
+        pool_eth,
+        3,
+        lp_y,
+        right_pad(yDAI.getPricePerFullShare.signature),
+        "0x00",
+        "0x00",
+        True,
+        True,
+        {'from': accounts[0]}
+    )
 
     yield registry
+
+
+@pytest.fixture(scope="module")
+def registry_swap(RegistrySwaps, accounts, registry_all, calculator):
+    yield RegistrySwaps.deploy(registry_all, calculator, {'from': accounts[0]})
 
 
 # calculator
